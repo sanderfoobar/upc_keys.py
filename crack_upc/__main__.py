@@ -18,7 +18,6 @@ against SSIDs of UPC access points.
 
 import sys, argparse, os
 from upc_keys import crack
-from wifi import Cell
 from time import sleep
 from colors import *
 
@@ -103,7 +102,7 @@ Python by dsc <sander@cedsys.nl>\n"""
         aps = []
 
         try:
-            aps = [z.ssid for z in Cell.all(self.iface) if z.ssid.startswith('UPC')]
+            aps = [z for z in os.popen("nmcli d wifi | awk \'{ print $1; }\' 2> /dev/null").read().split('\n') if z.startswith('UPC')]
             if not aps:
                 exit("CoulD not sCAn (got r00t?) or DiD not finD Any SSiD's sTArting w1th \'UPC\'.")
 

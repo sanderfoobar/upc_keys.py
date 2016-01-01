@@ -6,9 +6,6 @@ import os
 __version__ = '1.0.8'
 
 
-requires = [
-    'wifi'
-]
 
 upc_keys = Extension('upc_keys',
                      sources=['upc_keys.c'],
