@@ -22,9 +22,9 @@ This script uses `network-manager` to scan for SSIDs starting with UPCxxxxxx and
 ### How to use ###
 
 ```
-~$ crack-upc -i wlan0 
+~$ sudo crack-upc -i wlan0 
 or
-~$ crack-upc -s UPC1234567
+~$ sudo crack-upc -s UPC1234567
 ```
 - --help for more info
 
