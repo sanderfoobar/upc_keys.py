@@ -14,9 +14,8 @@ This script uses `network-manager` to scan for SSIDs starting with UPCxxxxxx and
 ### How to install ###
 
 ```
-~$ apt-get install python2.7-dev
+~$ sudo apt-get install python2.7-dev
 ~$ git clone <this repo>
-~$ sudo pip install wifi
 ~$ sudo python setup.py develop
 ```
 
