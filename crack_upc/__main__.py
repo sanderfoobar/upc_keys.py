@@ -24,8 +24,6 @@ from colors import *
 
 
 class Main:
-    global f
-
     def __init__(self):
         self.iface = None
         self.banner()
