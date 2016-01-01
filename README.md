@@ -4,7 +4,7 @@
 
 ### What is this? ###
 
-A while ago [some smart guys in an university](https://www.usenix.org/system/files/conference/woot15/woot15-paper-lorente.pdf) figured out that untouched WIFI access points by UPC routers are vulnerable to passphrase cracking based on their SSID. [upc_keys.c](https://haxx.in/upc_keys.c) was quickly coded as POC by [bl4sty](https://twitter.com/bl4sty). I took the time to 'weaponize' it with this little script.
+A while ago [some smart guys in a university](https://www.usenix.org/system/files/conference/woot15/woot15-paper-lorente.pdf) figured out that untouched WIFI access points by UPC routers are vulnerable to passphrase cracking based on their SSID. [upc_keys.c](https://haxx.in/upc_keys.c) was quickly coded as POC by [bl4sty](https://twitter.com/bl4sty). I took the time to 'weaponize' it with this little script.
 
 ### Built exclusively for network-manager ###
 
