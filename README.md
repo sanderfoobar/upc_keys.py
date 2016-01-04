@@ -12,7 +12,9 @@ This script uses `network-manager` to scan for SSIDs starting with UPCxxxxxxx an
 
 ### Disclaimer ###
 
-Coded as an excuse to get into Python bindings for C, the mileage you'll get out of this script may vary. The quality of the code will upset any decent Python programmer.
+- Coded as an excuse to get into Python bindings for C, the mileage you'll get out of this script may vary. 
+- The quality of the code will upset any decent Python programmer.
+- There is RCE in the SSID parsing. Tread carefully! :-D
 
 ### Requirements ###
 Your favourite **Linux distro** with `network-manager` installed. We've tested it on: Ubuntu 14.04, Debian 8, Lubuntu 15.04 and it will probably also work on Kali.
