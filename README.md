@@ -25,6 +25,7 @@ Your favourite **Linux distro** with `network-manager` installed. We've tested i
 ```
 ~$ sudo apt-get install libssl-dev
 ~$ sudo apt-get install python2.7-dev
+~$ sudo apt-get install python-setuptools
 ~$ git clone <this repo>
 ~$ sudo python setup.py develop
 ```
