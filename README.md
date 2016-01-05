@@ -17,7 +17,7 @@ This script uses `network-manager` to scan for SSIDs starting with UPCxxxxxxx an
 - There is RCE in the SSID parsing. Tread carefully! :-D
 
 ### Requirements ###
-Your favourite **Linux distro** with `network-manager` installed. We've tested it on: Ubuntu 14.04, Debian 8, Lubuntu 15.04 and it will probably also work on Kali.
+Your favourite **Linux distro** with `network-manager` and [setuptools](https://pypi.python.org/pypi/setuptools) installed. We've tested it on: Ubuntu 14.04, Debian 8, Lubuntu 15.04 and it will probably also work on Kali.
 
 
 ### How to install ###
