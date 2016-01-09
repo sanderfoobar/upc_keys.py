@@ -6,10 +6,12 @@ import os
 __version__ = '1.0.8'
 
 
+include_dirs = ['/usr/local/opt/openssl/include'] if sys.platform == "darwin" else []
 
 upc_keys = Extension('upc_keys',
                      sources=['upc_keys.c'],
-                     libraries=['crypto'],)
+                     libraries=['crypto'],
+                     include_dirs=include_dirs,)
 
 
 def read_file(filename):
