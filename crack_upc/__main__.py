@@ -149,7 +149,6 @@ Python by dsc <sander@cedsys.nl>\n"""
                 dhcp = os.popen("/sbin/ifconfig %s | grep \"inet addr:\" | cut -d: -f2 | awk \"{ print $1}\"" % self.iface).read()
             else:
                 resp = os.popen("networksetup -setairportnetwork %s \"%s\" \"%s\"" % (self.iface, ssid, key['pass'])).read()
-                print resp
                 if not resp:
                     sleep(15)
                     dhcp = os.popen("/sbin/ifconfig %s | grep \"inet \" | cut -d \" \" -f2" % self.iface).read()
